@@ -87,7 +87,7 @@ gcc -std=c99 -m64 -ffreestanding -fno-stack-protector -mno-red-zone -c "$PRINT_C
 echo
 echo -e "\e[1;3;38;2;150;50;150mHandling kernel.elf:\e[0m"
 
-echo -e "\e[1;3;38;2;180;60;180mLinking kernel.asm + main.c => kernel.elf...\e[0m"
+echo -e "\e[1;3;38;2;180;60;180mLinking obj files => kernel.elf...\e[0m"
 # -nostdlib: do not link against standard libs
 # -T linker.lds: use your custom linker script
 # -o "$KERNEL_ELF": output ELF
