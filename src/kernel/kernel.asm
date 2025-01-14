@@ -142,19 +142,11 @@ InitPIC:
 ;  KERNEL ENTRY (64-bit)
 ; ----------------------------------------------------------------------------
 KernelEntry:
-    xor ax, ax
-
-    ; Set ss register to 0
-    mov ss, ax
-
     ; Set a stack pointer for the kernel
     mov   rsp, 0x200000
 
     ; Call KMain (defined in main.c)
     call  KMain
-
-    ; Enable interrupts (optional, once you're ready to handle them)
-    sti
 
 End:
     hlt

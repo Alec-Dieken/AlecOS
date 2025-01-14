@@ -18,8 +18,12 @@ BOOT_SRC="$SRC_DIR/boot/boot.asm"
 LOADER_SRC="$SRC_DIR/loader/loader.asm"
 KERNEL_ASM_SRC="$SRC_DIR/kernel/kernel.asm"
 TRAP_ASM_SRC="$SRC_DIR/kernel/trap.asm"
+LIB_ASM_SRC="$SRC_DIR/lib/lib.asm"
+
 MAIN_C_SRC="$SRC_DIR/kernel/main.c"
 TRAP_C_SRC="$SRC_DIR/kernel/trap.c"
+PRINT_C_SRC="$SRC_DIR/lib/print.c"
+
 LINKER_SCRIPT="linker.lds"
 
 # Output files
@@ -28,8 +32,12 @@ LOADER_BIN="$BUILD_DIR/loader.bin"
 
 KERNEL_ASM_OBJ="$BUILD_DIR/kernel_asm.o"
 TRAP_ASM_OBJ="$BUILD_DIR/trap_asm.o"
+LIB_ASM_OBJ="$BUILD_DIR/lib_asm.o"
+
 MAIN_C_OBJ="$BUILD_DIR/main.o"
 TRAP_C_OBJ="$BUILD_DIR/trap.o"
+PRINT_C_OBJ="$BUILD_DIR/print.o"
+
 KERNEL_ELF="$BUILD_DIR/kernel.elf"
 KERNEL_BIN="$BUILD_DIR/kernel.bin"
 
@@ -52,6 +60,9 @@ nasm -f elf64 -o "$KERNEL_ASM_OBJ" "$KERNEL_ASM_SRC"
 echo -e "\e[36mCompiling trap assembly (trap.asm) to 64-bit object...\e[0m"
 nasm -f elf64 -o "$TRAP_ASM_OBJ" "$TRAP_ASM_SRC"
 
+echo -e "\e[36mCompiling lib assembly (lib.asm) to 64-bit object...\e[0m"
+nasm -f elf64 -o "$LIB_ASM_OBJ" "$LIB_ASM_SRC"
+
 echo
 echo -e "\e[1;3;38;2;150;80;30mCompiling C Files:\e[0m"
 
@@ -67,6 +78,12 @@ echo -e "\e[33mCompiling trap.c to 64-bit object...\e[0m"
 # -m64 : ensures 64-bit code generation
 gcc -std=c99 -m64 -ffreestanding -fno-stack-protector -mno-red-zone -c "$TRAP_C_SRC" -o "$TRAP_C_OBJ"
 
+echo -e "\e[33mCompiling print.c to 64-bit object...\e[0m"
+# -ffreestanding : no standard lib assumptions
+# -fno-stack-protector, -mno-red-zone : typical for kernel
+# -m64 : ensures 64-bit code generation
+gcc -std=c99 -m64 -ffreestanding -fno-stack-protector -mno-red-zone -c "$PRINT_C_SRC" -o "$PRINT_C_OBJ"
+
 echo
 echo -e "\e[1;3;38;2;150;50;150mHandling kernel.elf:\e[0m"
 
@@ -78,7 +95,9 @@ ld -nostdlib -z max-page-size=0x1000 -T "$LINKER_SCRIPT" -o "$KERNEL_ELF" \
    "$KERNEL_ASM_OBJ" \
    "$MAIN_C_OBJ" \
    "$TRAP_ASM_OBJ" \
-   "$TRAP_C_OBJ"
+   "$TRAP_C_OBJ"  \
+   "$LIB_ASM_OBJ" \
+   "$PRINT_C_OBJ"
 
 echo -e "\e[1;3;38;2;180;60;180mConverting kernel.elf => kernel.bin (raw binary)...\e[0m"
 objcopy -O binary "$KERNEL_ELF" "$KERNEL_BIN"
