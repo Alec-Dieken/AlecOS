@@ -1,6 +1,9 @@
 #ifndef _PRINT_H_
 #define _PRINT_H_
 
+#include <stdarg.h>
+#include "lib.h"
+
 /**
  * LINE_SIZE: Defines the number of characters in a single line of the screen buffer.
  * Typically used for managing text rendering in a fixed-width screen layout.
@@ -21,7 +24,7 @@ struct ScreenBuffer {
 };
 
 /**
- * printk: Formats and prints a string to the screen or log.
+ * printk: Formats and prints a string to the screen.
  * Similar to printf but optimized for kernel or low-level output.
  *
  * @param format A format string specifying how to format the output.
@@ -29,5 +32,15 @@ struct ScreenBuffer {
  * @return The number of characters printed, or a negative value if an error occurs.
  */
 int printk(const char *format, ...);
+
+/**
+ * vprintk: Formats and prints a string to the screen using a va_list.
+ * Similar to vprintf but optimized for kernel or low-level output.
+ *
+ * @param format A format string specifying how to format the output.
+ * @param args A va_list containing the arguments corresponding to the format specifiers.
+ * @return The number of characters printed, or a negative value if an error occurs.
+ */
+int vprintk(const char *format, va_list args);
 
 #endif  // _PRINT_H_

@@ -1,6 +1,9 @@
 #ifndef _LIB_H_
 #define _LIB_H_
 
+#include <stdint.h>
+#include <stddef.h>
+
 /**
  * memset: Fills a block of memory with a specified value.
  *
@@ -38,5 +41,22 @@ void memcpy(void* dst, void* src, int size);
  *         is found to be less than, equal to, or greater than the second block.
  */
 int memcmp(void* src1, void* src2, int size);
+
+/**
+ * @brief Calculates the length of a null-terminated string.
+ *
+ * @param str Pointer to the null-terminated string.
+ * @return The number of characters in the string, excluding the null terminator.
+ */
+size_t strlen(const char *str);
+
+/**
+ * @brief Copies a null-terminated string from source to destination.
+ *
+ * @param dest Pointer to the destination buffer.
+ * @param src Pointer to the source string.
+ * @return Pointer to the destination string.
+ */
+char* strcpy(char *dest, const char *src);
 
 #endif  // _LIB_H_

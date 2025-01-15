@@ -1,6 +1,7 @@
 #include "trap.h"
 #include "../lib/print.h"
 #include "../lib/lib.h"
+#include "../lib/debug.h"
 
 /**
  * Displays a welcome message for AlecOS with ASCII art.
@@ -44,5 +45,4 @@ void KMain(void) {
     printk("This value is equal to %x\n", value);
 
     printk("System initialization complete.\n");
-    printk("Awaiting user input...\n");
 }

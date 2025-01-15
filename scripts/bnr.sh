@@ -12,6 +12,7 @@
 # Directories
 BUILD_DIR="build"
 SRC_DIR="src"
+LINKER_SCRIPT="linker.lds"
 
 # Source paths
 BOOT_SRC="$SRC_DIR/boot/boot.asm"
@@ -22,9 +23,9 @@ LIB_ASM_SRC="$SRC_DIR/lib/lib.asm"
 
 MAIN_C_SRC="$SRC_DIR/kernel/main.c"
 TRAP_C_SRC="$SRC_DIR/kernel/trap.c"
+LIB_C_SRC="$SRC_DIR/lib/lib.c"
 PRINT_C_SRC="$SRC_DIR/lib/print.c"
-
-LINKER_SCRIPT="linker.lds"
+DEBUG_C_SRC="$SRC_DIR/lib/debug.c"
 
 # Output files
 BOOT_BIN="$BUILD_DIR/boot.bin"
@@ -36,7 +37,9 @@ LIB_ASM_OBJ="$BUILD_DIR/lib_asm.o"
 
 MAIN_C_OBJ="$BUILD_DIR/main.o"
 TRAP_C_OBJ="$BUILD_DIR/trap.o"
+LIB_C_OBJ="$BUILD_DIR/lib.o"
 PRINT_C_OBJ="$BUILD_DIR/print.o"
+DEBUG_C_OBJ="$BUILD_DIR/debug.o"
 
 KERNEL_ELF="$BUILD_DIR/kernel.elf"
 KERNEL_BIN="$BUILD_DIR/kernel.bin"
@@ -78,11 +81,23 @@ echo -e "\e[33mCompiling trap.c to 64-bit object...\e[0m"
 # -m64 : ensures 64-bit code generation
 gcc -std=c99 -m64 -ffreestanding -fno-stack-protector -mno-red-zone -c "$TRAP_C_SRC" -o "$TRAP_C_OBJ"
 
+echo -e "\e[33mCompiling lib.c to 64-bit object...\e[0m"
+# -ffreestanding : no standard lib assumptions
+# -fno-stack-protector, -mno-red-zone : typical for kernel
+# -m64 : ensures 64-bit code generation
+gcc -std=c99 -m64 -ffreestanding -fno-stack-protector -mno-red-zone -c "$LIB_C_SRC" -o "$LIB_C_OBJ"
+
 echo -e "\e[33mCompiling print.c to 64-bit object...\e[0m"
 # -ffreestanding : no standard lib assumptions
 # -fno-stack-protector, -mno-red-zone : typical for kernel
 # -m64 : ensures 64-bit code generation
 gcc -std=c99 -m64 -ffreestanding -fno-stack-protector -mno-red-zone -c "$PRINT_C_SRC" -o "$PRINT_C_OBJ"
+
+echo -e "\e[33mCompiling debug.c to 64-bit object...\e[0m"
+# -ffreestanding : no standard lib assumptions
+# -fno-stack-protector, -mno-red-zone : typical for kernel
+# -m64 : ensures 64-bit code generation
+gcc -std=c99 -m64 -ffreestanding -fno-stack-protector -mno-red-zone -c "$DEBUG_C_SRC" -o "$DEBUG_C_OBJ"
 
 echo
 echo -e "\e[1;3;38;2;150;50;150mHandling kernel.elf:\e[0m"
@@ -97,7 +112,9 @@ ld -nostdlib -z max-page-size=0x1000 -T "$LINKER_SCRIPT" -o "$KERNEL_ELF" \
    "$TRAP_ASM_OBJ" \
    "$TRAP_C_OBJ"  \
    "$LIB_ASM_OBJ" \
-   "$PRINT_C_OBJ"
+   "$LIB_C_OBJ" \
+   "$PRINT_C_OBJ" \
+   "$DEBUG_C_OBJ"
 
 echo -e "\e[1;3;38;2;180;60;180mConverting kernel.elf => kernel.bin (raw binary)...\e[0m"
 objcopy -O binary "$KERNEL_ELF" "$KERNEL_BIN"
